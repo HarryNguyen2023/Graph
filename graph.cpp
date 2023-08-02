@@ -97,6 +97,7 @@ void Graph::BellmanFord(std::vector<int>& dist, int vertex)
 {
     // Set the distance of the start node to 0
     dist[vertex] = 0;
+    
     // First round loop to relax the distances to the nodes
     for(int i = 1; i < numVert - 1; ++i)
     {
@@ -147,6 +148,48 @@ void Graph::BellmanFord(int vertex)
     return;
 }
 
+// Function to perdorm the topological sort for Directed Acyclic Graph (DAG)
+void Graph::topologicalSortUtil(std::stack<int>& stack, int vertex)
+{
+    // Update the visited of the current node
+    visited[vertex] = true;
+
+    // DFS
+    for(auto it = adj[vertex].begin(); it != adj[vertex].end(); ++it)
+    {
+        if(! visited[(*it).first])
+            topologicalSortUtil(stack, (*it).first);
+    }
+    // Push the node into the stack
+    stack.push(vertex);
+}
+
+// General function to perform topological sort
+void Graph::topologicalSort()
+{
+    // Set the visited array
+    for(int i = 0; i < numVert; ++i)
+        visited[i] = false;
+    
+    std::stack<int> stack;
+
+    // Reacursively call the Util function for topological sorting
+    for(int i = 0; i < numVert; ++i)
+    {
+        if(! visited[i])
+            topologicalSortUtil(stack, i);
+    }
+
+    // Display content of the stack
+    std::cout<<"The topological sort of the graph: ";
+    while(! stack.empty())
+    {
+        std::cout<<stack.top()<<" ";
+        stack.pop();
+    }
+    std::cout<<std::endl;
+}
+
 int main()
 {
     // Intiiate the graph
@@ -167,11 +210,22 @@ int main()
     g.addEdge(5, 2, 2);
     g.addEdge(5, 4, 3);   
 
+    // DAG to perform topological sort
+    // g.addEdge(5, 2, 3);
+    // g.addEdge(5, 0, -7);
+    // g.addEdge(4, 0, 4);
+    // g.addEdge(4, 1, 2);
+    // g.addEdge(2, 3, -1);
+    // g.addEdge(3, 1, 3);
+
     // DFS the graph  
-    g.BFS(0);
+    g.BFS(3);
 
     // Bellman Ford algorithm
     g.BellmanFord(2);
+
+    // Topological sort
+    // g.topologicalSort();
 
     return 0;
 }

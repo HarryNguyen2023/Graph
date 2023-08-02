@@ -1,4 +1,5 @@
 #include <list>
+#include <stack>
 
 // Initiate the class of graph
 #define edge std::pair<int, int>
@@ -12,6 +13,7 @@ class Graph
     void BFSearch(int vertex);
     void printBF(std::vector<int>& dist, int vertex);
     void BellmanFord(std::vector<int>& dist, int vertex);
+    void topologicalSortUtil(std::stack<int>& stack, int vertex);
     
     public:
     
@@ -20,4 +22,5 @@ class Graph
     void DFS(int vertex);
     void BFS(int vertex);
     void BellmanFord(int vertex);
+    void topologicalSort();
 };
