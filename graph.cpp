@@ -1,19 +1,20 @@
 #include <iostream>
 #include <queue>
+#include <limits.h>
 #include "graph.h"
 
 // Constructor of the class
 Graph::Graph(int vertices)
 {
     numVert = vertices;
-    adj = new std::list<int>[vertices];
+    adj = new std::list<edge>[vertices];
     visited = new bool[vertices];
 }
 
 // Function to add edge into the class
-void Graph::addEdge(int src, int end)
+void Graph::addEdge(int src, int dest, int weight)
 {
-    adj[src].push_front(end);
+    adj[src].push_front(edge(dest, weight));
 }
 
 // Function to perform depth first search algorithm
@@ -25,12 +26,11 @@ void Graph::DFSearch(int vertex)
     // Display to the terminal the visiting vertex
     std::cout<<vertex<<" ";
 
-    std::list<int>::iterator it;
     // Visited all other unvisited adjacent node of the current vertex
-    for(it = adj[vertex].begin(); it != adj[vertex].end(); ++it)
+    for(auto it = adj[vertex].begin(); it != adj[vertex].end(); ++it)
     {
-        if(! visited[*it])
-            DFSearch(*it);
+        if(! visited[(*it).first])
+            DFSearch((*it).first);
     }
 }
 
@@ -65,10 +65,10 @@ void Graph::BFSearch(int vertex)
         // Visit adjacent vertices
         for(auto it = adj[temp].begin(); it != adj[temp].end(); ++it)
         {
-            if(! visited[*it])
+            if(! visited[(*it).first])
             {
-                visited[*it] = true;
-                bfqueue.push(*it);
+                visited[(*it).first] = true;
+                bfqueue.push((*it).first);
             }
         }
     }
@@ -85,18 +85,93 @@ void Graph::BFS(int vertex)
     std::cout<<std::endl;
 }
 
+// Function to print elements in a vector 
+void Graph::printBF(std::vector<int>& dist, int vertex)
+{
+    for(int i = 0; i < dist.size(); ++i)
+        std::cout<<"Shortest distance from "<<vertex<<" to "<<i<<" node is: "<<dist[i]<<std::endl;
+}
+
+// Function to perfrom the Bellman Ford algorithm to find the shortest paths 
+void Graph::BellmanFord(std::vector<int>& dist, int vertex)
+{
+    // Set the distance of the start node to 0
+    dist[vertex] = 0;
+    // First round loop to relax the distances to the nodes
+    for(int i = 1; i < numVert - 1; ++i)
+    {
+        // Trvaverse all the edges in the graph
+        for(int j = 0; j < numVert; ++j)
+        {
+            for(auto it = adj[j].begin(); it != adj[j].end(); ++it)
+            {
+                int dest = (*it).first;
+                int weight = (*it).second;
+                if(dist[j] != INT_MAX && dist[j] + weight < dist[dest])
+                    dist[dest] = dist[j] + weight;
+            }
+        }
+    }
+
+    // Second loop to define the negative weight path
+    for(int j = 0; j < numVert; ++j)
+    {
+        for(auto it = adj[j].begin(); it != adj[j].end(); ++it)
+        {
+            int dest = (*it).first;
+            int weight = (*it).second;
+            if(dist[j] != INT_MAX && dist[j] + weight < dist[dest])
+            {
+                std::cout<<"Graph contains negative weight cycle"<<std::endl;
+                return;
+            }
+        }
+    }
+}
+
+// General function to call the Bellman Ford algorithm
+void Graph::BellmanFord(int vertex)
+{
+    // Initiate the vector 
+    std::vector<int> dist(numVert);
+
+    // Set all the initial distance to maximum
+    for(int i = 0; i < dist.size(); ++i)
+        dist[i] = INT_MAX;
+
+    BellmanFord(dist, vertex);
+
+    // Display the result to the terminal
+    printBF(dist, vertex);
+
+    return;
+}
+
 int main()
 {
     // Intiiate the graph
-    Graph g(4);
-    g.addEdge(0, 1);
-    g.addEdge(0, 2);
-    g.addEdge(1, 2);
-    g.addEdge(2, 0);
-    g.addEdge(2, 3);   
+    Graph g(6);
+    g.addEdge(0, 1, 4);
+    g.addEdge(0, 2, 4);
+    g.addEdge(1, 2, 2);
+    g.addEdge(1, 0, 4);
+    g.addEdge(2, 0, 4);
+    g.addEdge(2, 1, 2);
+    g.addEdge(2, 3, 3);
+    g.addEdge(2, 5, 2);
+    g.addEdge(2, 4, 4);
+    g.addEdge(3, 2, 3);
+    g.addEdge(3, 4, 3);
+    g.addEdge(4, 2, 4);
+    g.addEdge(4, 3, 3);
+    g.addEdge(5, 2, 2);
+    g.addEdge(5, 4, 3);   
 
     // DFS the graph  
-    g.BFS(2);
+    g.BFS(0);
+
+    // Bellman Ford algorithm
+    g.BellmanFord(2);
 
     return 0;
 }
