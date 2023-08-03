@@ -15,6 +15,14 @@ Graph::Graph(int vertices)
 void Graph::addEdge(int src, int dest, int weight)
 {
     adj[src].push_front(edge(dest, weight));
+    adj[dest].push_front(edge(src, weight));
+}
+
+// Function to remove edge from the graph
+void Graph::removeEdge(int src, int dest, int weight)
+{
+    adj[src].remove(edge(dest, weight));
+    adj[dest].remove(edge(src, weight));
 }
 
 // Function to perform depth first search algorithm
@@ -88,6 +96,7 @@ void Graph::BFS(int vertex)
 // Function to print elements in a vector 
 void Graph::printBF(std::vector<int>& dist, int vertex)
 {
+    std::cout<<"\nBellman Ford shortest distance"<<std::endl;
     for(int i = 0; i < dist.size(); ++i)
         std::cout<<"Shortest distance from "<<vertex<<" to "<<i<<" node is: "<<dist[i]<<std::endl;
 }
@@ -190,6 +199,57 @@ void Graph::topologicalSort()
     std::cout<<std::endl;
 }
 
+// Function to perform Dijkstra algorithm to find the shortest path 
+void Graph::DijkstraUtil(std::vector<int>& dist, int src)
+{
+    // Initiate the min heap
+    std::priority_queue<int, std::vector<int>, std::greater<int>> mheap;
+
+    // BFS the whole graph
+    mheap.push(src);
+    dist[src] = 0;
+
+    while(! mheap.empty())
+    {
+        src = mheap.top();
+        mheap.pop();
+
+        // Loop through all of the current node's adjacent nodes
+        for(auto it = adj[src].begin(); it != adj[src].end(); ++it)
+        {
+            int dest = (*it).first;
+            int weight = (*it).second;
+
+            // Update the shortest distance if there is path to v
+            if(dist[src] + weight < dist[dest])
+            {
+                dist[dest] = dist[src] + weight;
+                mheap.push(dest);
+            }
+        }
+    }
+}
+
+// General function to perform Dijkstra algorithm and interface with user
+void Graph::Dijkstra(int src)
+{
+    // Initiate the distance vector
+    std::vector<int> dist(numVert);
+
+    // Set all the initial distance to maximum
+    for(int i = 0; i < dist.size(); ++i)
+        dist[i] = INT_MAX;
+
+    DijkstraUtil(dist, src);
+
+    // Display the result to the terminal
+    std::cout<<"\nDijkstra shortest path"<<std::endl;
+    for(int i = 0; i < dist.size(); ++i)
+        std::cout<<"Distance from "<<src<<" to "<<i<<" is: "<<dist[i]<<std::endl;
+    
+    return;
+}
+
 int main()
 {
     // Intiiate the graph
@@ -197,17 +257,10 @@ int main()
     g.addEdge(0, 1, 4);
     g.addEdge(0, 2, 4);
     g.addEdge(1, 2, 2);
-    g.addEdge(1, 0, 4);
-    g.addEdge(2, 0, 4);
-    g.addEdge(2, 1, 2);
     g.addEdge(2, 3, 3);
     g.addEdge(2, 5, 2);
     g.addEdge(2, 4, 4);
-    g.addEdge(3, 2, 3);
     g.addEdge(3, 4, 3);
-    g.addEdge(4, 2, 4);
-    g.addEdge(4, 3, 3);
-    g.addEdge(5, 2, 2);
     g.addEdge(5, 4, 3);   
 
     // DAG to perform topological sort
@@ -223,6 +276,12 @@ int main()
 
     // Bellman Ford algorithm
     g.BellmanFord(2);
+
+    // Remove some edge in the tree
+    g.removeEdge(5, 2, 2);
+
+    g.BellmanFord(2);
+    g.Dijkstra(2);
 
     // Topological sort
     // g.topologicalSort();
