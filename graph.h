@@ -17,6 +17,8 @@ class Graph
     void topologicalSortUtil(std::stack<int>& stack, int vertex);
     void DijkstraUtil(std::vector<int>& dist, int src);
     void PrimUtil(std::vector<int>& mst, std::vector<int>& dist);
+    int find_parent(std::vector<int>& parent, int vertex);
+    void KruskalUtil(std::vector<std::pair<int,edge>>& graph, std::vector<std::pair<int, edge>>& mst, std::vector<int>& parent);
     
     public:
     
@@ -29,4 +31,5 @@ class Graph
     void topologicalSort();
     void Dijkstra(int src);
     void Prim();
+    void Kruskal();
 };

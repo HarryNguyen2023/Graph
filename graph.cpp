@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <queue>
 #include <limits.h>
 #include "graph.h"
@@ -277,7 +278,7 @@ void Graph::PrimUtil(std::vector<int>& mst, std::vector<int>& dist)
         {
             int dest = (*it).first;
             int weight = (*it).second;
-            
+
             // Update the MST
             if(visited[dest] == false && dist[dest] > weight)
             {
@@ -311,6 +312,63 @@ void Graph::Prim()
     {
         std::cout<<"Edge from "<<mst[i]<<" to "<<i<<std::endl;
     }
+}
+
+// Function to find the parent of nodes in an edge to define if adding the edge into MST will create a cycle
+int Graph::find_parent(std::vector<int>& parent, int vertex)
+{
+    if(parent[vertex] == vertex)
+        return vertex;
+    return find_parent(parent, parent[vertex]);
+}
+
+// Function to find the MST by Kruskal algorithm
+void Graph::KruskalUtil(std::vector<std::pair<int, edge>>& graph, std::vector<std::pair<int, edge>>& mst, std::vector<int>& parent)
+{
+    // Sort the graph according to the weight of the paths
+    std::sort(graph.begin(), graph.end());
+
+    // Traverse all the edges and input in the MST if there is no cycle
+    for(int i = 0; i < graph.size(); ++i)
+    {
+        int fiPar = find_parent(parent, graph[i].second.first);
+        int sePar = find_parent(parent, graph[i].second.second);
+        if(fiPar != sePar)
+        {
+            mst.push_back(graph[i]);
+            parent[fiPar] = parent[sePar];
+        }
+    }
+}
+
+// Function to generally perform Kruskal algorithm to find the MST
+void Graph::Kruskal()
+{
+    // Initiate some variables
+    std::vector<std::pair<int, edge>> mst;
+    std::vector<std::pair<int, edge>> graph;
+    // Copy all the edge into the vector
+    for(int j = 0; j < numVert; ++j)
+    {
+        for(auto it = adj[j].begin(); it != adj[j].end(); ++it)
+        {
+            graph.push_back(std::make_pair((*it).second, edge(j, (*it).first)));
+        }
+    }
+
+    // Initiate the parent vector
+    std::vector<int> parent(numVert);
+    for(int i = 0; i < parent.size(); ++i)
+        parent[i] = i;
+
+    KruskalUtil(graph, mst, parent);
+
+    // Display to the terminal
+    std::cout<<"\nThe MST by Kruskal algorithm\n";
+    for(int i = 0; i < mst.size(); ++i)
+        std::cout<<"Edge from "<<mst[i].second.first<<" to "<<mst[i].second.second<<" : "<<mst[i].first<<std::endl;
+    
+    return;
 }
 
 int main()
@@ -357,6 +415,7 @@ int main()
 
     // MST algorithms
     g.Prim();
+    g.Kruskal();
 
     // Topological sort
     // g.topologicalSort();
