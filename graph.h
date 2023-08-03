@@ -16,6 +16,7 @@ class Graph
     void BellmanFord(std::vector<int>& dist, int vertex);
     void topologicalSortUtil(std::stack<int>& stack, int vertex);
     void DijkstraUtil(std::vector<int>& dist, int src);
+    void PrimUtil(std::vector<int>& mst, std::vector<int>& dist);
     
     public:
     
@@ -27,4 +28,5 @@ class Graph
     void BellmanFord(int vertex);
     void topologicalSort();
     void Dijkstra(int src);
+    void Prim();
 };

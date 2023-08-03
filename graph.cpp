@@ -203,15 +203,15 @@ void Graph::topologicalSort()
 void Graph::DijkstraUtil(std::vector<int>& dist, int src)
 {
     // Initiate the min heap
-    std::priority_queue<int, std::vector<int>, std::greater<int>> mheap;
+    std::priority_queue<edge, std::vector<edge>, std::greater<edge>> mheap;
 
     // BFS the whole graph
-    mheap.push(src);
+    mheap.push(std::make_pair(0, src));
     dist[src] = 0;
 
     while(! mheap.empty())
     {
-        src = mheap.top();
+        src = mheap.top().second;
         mheap.pop();
 
         // Loop through all of the current node's adjacent nodes
@@ -224,7 +224,7 @@ void Graph::DijkstraUtil(std::vector<int>& dist, int src)
             if(dist[src] + weight < dist[dest])
             {
                 dist[dest] = dist[src] + weight;
-                mheap.push(dest);
+                mheap.push(std::make_pair(weight, dest));
             }
         }
     }
@@ -250,18 +250,89 @@ void Graph::Dijkstra(int src)
     return;
 }
 
+// Function to perform the prim algorithm to find the minimum spanning tree in the graph
+void Graph::PrimUtil(std::vector<int>& mst, std::vector<int>& dist)
+{
+    int src = 0;
+
+    // Intiiate the priority queue
+    std::priority_queue<edge, std::vector<edge>, std::greater<edge>> mheap;
+
+    mheap.push(std::make_pair(0, src));
+    dist[src] = 0;
+
+    // BFS the graph
+    while(! mheap.empty())
+    {
+        src = mheap.top().second;
+        mheap.pop();
+
+        // Check wether we had add the edge to the MST
+        if(visited[src])
+            continue;
+        visited[src] = true;
+
+        // Loop through all the adjacent nodes
+        for(auto it = adj[src].begin(); it != adj[src].end(); ++it)
+        {
+            int dest = (*it).first;
+            int weight = (*it).second;
+            
+            // Update the MST
+            if(visited[dest] == false && dist[dest] > weight)
+            {
+                dist[dest] = weight;
+                mheap.push(std::make_pair(weight, dest));
+                mst[dest] = src;
+            }
+        }
+    }
+    return;
+}
+
+// General function to perform Prim algorithm to find the MST
+void Graph::Prim()
+{
+    // Set the visited array
+    for(int i = 0; i < numVert; ++i)
+        visited[i] = false;
+
+    // Initiate some variables
+    std::vector<int> mst(numVert);
+    std::vector<int> dist(numVert);
+    for(int i = 0; i < dist.size(); ++i)
+        dist[i] = INT_MAX;
+
+    PrimUtil(mst, dist);
+
+    // Dsipaly the MST
+    std::cout<<"\nThe MST using Prim algorithm\n";
+    for(int i = 1; i < mst.size(); ++i)
+    {
+        std::cout<<"Edge from "<<mst[i]<<" to "<<i<<std::endl;
+    }
+}
+
 int main()
 {
     // Intiiate the graph
-    Graph g(6);
+    Graph g(9);
+ 
+    //  making above shown graph
     g.addEdge(0, 1, 4);
-    g.addEdge(0, 2, 4);
-    g.addEdge(1, 2, 2);
-    g.addEdge(2, 3, 3);
-    g.addEdge(2, 5, 2);
-    g.addEdge(2, 4, 4);
-    g.addEdge(3, 4, 3);
-    g.addEdge(5, 4, 3);   
+    g.addEdge(0, 7, 8);
+    g.addEdge(1, 2, 8);
+    g.addEdge(1, 7, 11);
+    g.addEdge(2, 3, 7);
+    g.addEdge(2, 8, 2);
+    g.addEdge(2, 5, 4);
+    g.addEdge(3, 4, 9);
+    g.addEdge(3, 5, 14);
+    g.addEdge(4, 5, 10);
+    g.addEdge(5, 6, 2);
+    g.addEdge(6, 7, 1);
+    g.addEdge(6, 8, 6);
+    g.addEdge(7, 8, 7);
 
     // DAG to perform topological sort
     // g.addEdge(5, 2, 3);
@@ -280,8 +351,12 @@ int main()
     // Remove some edge in the tree
     g.removeEdge(5, 2, 2);
 
+    // Shortest path algorithms
     g.BellmanFord(2);
     g.Dijkstra(2);
+
+    // MST algorithms
+    g.Prim();
 
     // Topological sort
     // g.topologicalSort();
