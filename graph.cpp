@@ -371,6 +371,93 @@ void Graph::Kruskal()
     return;
 }
 
+// Function to find the possible path between 2 nodes in the network using BFS
+bool Graph::BFSmaxFlow(std::vector<std::vector<int>>& mat, int src, int dest, std::vector<int>& parent)
+{
+    // Set up the visited array
+    for(int i = 0; i < numVert; ++i)
+        visited[i] = false;
+
+    // Initiate the queue
+    std::queue<int> qgraph;
+
+    qgraph.push(src);
+    visited[src] = true;
+    parent[src] = -1;
+
+    while(! qgraph.empty())
+    {
+        src = qgraph.front();
+        qgraph.pop();
+
+        // Loop through all the adjacent vertices
+        for(int i = 0; i < numVert; ++i)
+        {
+            if(! visited[i] && mat[src][i] > 0)
+            {
+                qgraph.push(i);
+                parent[i] = src;
+                visited[i] = true;
+            }
+        }
+    }
+    return visited[dest];
+}
+
+// Function to convert the adjacent list to the adjecent matrix
+void Graph::ListtoMat(std::vector<std::vector<int>>& mat)
+{
+    for(int i = 0; i < numVert; ++i)
+    {
+        for(auto it = adj[i].begin(); it != adj[i].end(); ++it)
+        {
+            mat[i][(*it).first] = (*it).second;
+        }
+    }
+}
+
+// Function to perform Ford Fulkerson algorithm to find the maximum flow among the whole network
+int Graph::FordFulkersonUtil(int src, int dest)
+{
+    // Initiate some variables
+    int u, v;
+    int max_flow = 0;
+    std::vector<int> parent(numVert);
+    std::vector<std::vector<int>> mat(numVert, std::vector<int>(numVert, 0));
+
+    // Convert the adjacent list to the adjacent matrix
+    ListtoMat(mat);
+
+    // Find the path from src to dest and update the residual graph
+    while(BFSmaxFlow(mat, src, dest, parent))
+    {
+        int path_flow = INT_MAX;
+        // Find the minimum flow on the path
+        for(v = dest; v != src; v = parent[v])
+        {
+            u = parent[v];
+            path_flow = (path_flow < mat[u][v]) ? path_flow : mat[u][v];    
+        }
+
+        // Update the residual graph
+        for(v = dest; v != src; v = parent[v])
+        {
+            u = parent[v];
+            mat[u][v] -= path_flow;
+            mat[v][u] += path_flow;    
+        }
+        // Update the max flow
+        max_flow += path_flow;
+    }
+    return max_flow;
+}
+
+// Function to generally find maximum flow using Ford Fulkerson algorithm
+void Graph::FordFulkerson(int src, int dest)
+{
+    std::cout<<"The maimum flow from "<<src<<" to "<<dest<<" in the network is : "<<FordFulkersonUtil(src, dest)<<std::endl;
+}
+
 int main()
 {
     // Intiiate the graph
@@ -394,10 +481,10 @@ int main()
 
     // DAG to perform topological sort
     // g.addEdge(5, 2, 3);
-    // g.addEdge(5, 0, -7);
+    // g.addEdge(5, 0, 7);
     // g.addEdge(4, 0, 4);
     // g.addEdge(4, 1, 2);
-    // g.addEdge(2, 3, -1);
+    // g.addEdge(2, 3, 1);
     // g.addEdge(3, 1, 3);
 
     // DFS the graph  
@@ -416,6 +503,9 @@ int main()
     // MST algorithms
     g.Prim();
     g.Kruskal();
+
+    // Maimum flow algorithms
+    // g.FordFulkerson(0, 8);
 
     // Topological sort
     // g.topologicalSort();

@@ -19,6 +19,9 @@ class Graph
     void PrimUtil(std::vector<int>& mst, std::vector<int>& dist);
     int find_parent(std::vector<int>& parent, int vertex);
     void KruskalUtil(std::vector<std::pair<int,edge>>& graph, std::vector<std::pair<int, edge>>& mst, std::vector<int>& parent);
+    bool BFSmaxFlow(std::vector<std::vector<int>>& mat, int src, int dest, std::vector<int>& parent);
+    int FordFulkersonUtil(int src, int dest);
+    void ListtoMat(std::vector<std::vector<int>>& mat);
     
     public:
     
@@ -32,4 +35,5 @@ class Graph
     void Dijkstra(int src);
     void Prim();
     void Kruskal();
+    void FordFulkerson(int src, int dest);
 };
