@@ -458,6 +458,64 @@ void Graph::FordFulkerson(int src, int dest)
     std::cout<<"The maimum flow from "<<src<<" to "<<dest<<" in the network is : "<<FordFulkersonUtil(src, dest)<<std::endl;
 }
 
+// Function to generate the reverse graph
+Graph Graph::transpose()
+{
+    Graph g(numVert);
+    // Loop through all the edge and reverse the direction in the new graph
+    for(int i = 0; i < numVert; ++i)
+    {
+        for(auto it = adj[i].begin(); it != adj[i].end(); ++it)
+        {
+            g.addEdge((*it).first, i, (*it).second);
+        }
+    }
+    return g;
+}
+
+// Function to find the strongly connected component using Kosaraju algorithm
+void Graph::KosarajuUtil(std::stack<int>& gstack)
+{
+    // Loop through all the vertices and push it into the stack using DFS
+    for(int i = 0; i < numVert; ++i)
+    {
+        if(! visited[i])
+            topologicalSortUtil(gstack, i);
+    }
+
+    Graph reGraph = transpose();
+
+    // Reset the visited array again
+    for(int i = 0; i < numVert; ++i)
+        visited[i] = false;
+
+    // DFS the reverse graph and print the SCC
+    while(! gstack.empty())
+    {
+        int src = gstack.top();
+        gstack.pop();
+
+        if(! visited[src])
+        {
+            reGraph.DFS(src);
+        }
+    }
+}
+
+// General function to perform the Kosaraju algorithm to find the SCC in the directed graph
+void Graph::Kosaraju()
+{
+    // Set up the visited array
+    for(int i = 0; i < numVert; ++i)
+        visited[i] = false;
+
+    // Inititate some variables
+    std::stack<int> gstack;
+
+    std::cout<<"\nThe SCC of the graph by Kosaraju algorithm\n";
+    KosarajuUtil(gstack);
+}
+
 int main()
 {
     // Intiiate the graph
@@ -503,6 +561,9 @@ int main()
     // MST algorithms
     g.Prim();
     g.Kruskal();
+
+    // SCC algorithm
+    g.Kosaraju();
 
     // Maimum flow algorithms
     // g.FordFulkerson(0, 8);

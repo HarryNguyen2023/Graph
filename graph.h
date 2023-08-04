@@ -22,6 +22,8 @@ class Graph
     bool BFSmaxFlow(std::vector<std::vector<int>>& mat, int src, int dest, std::vector<int>& parent);
     int FordFulkersonUtil(int src, int dest);
     void ListtoMat(std::vector<std::vector<int>>& mat);
+    void KosarajuUtil(std::stack<int>& gstack);
+    Graph transpose();
     
     public:
     
@@ -36,4 +38,5 @@ class Graph
     void Prim();
     void Kruskal();
     void FordFulkerson(int src, int dest);
+    void Kosaraju();
 };
