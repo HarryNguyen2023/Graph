@@ -24,6 +24,8 @@ class Graph
     void ListtoMat(std::vector<std::vector<int>>& mat);
     void KosarajuUtil(std::stack<int>& gstack);
     Graph transpose();
+    void printMat(std::vector<std::vector<int>>& mat);
+    void FloydWarshallUtil(std::vector<std::vector<int>>& mat);
     
     public:
     
@@ -39,4 +41,5 @@ class Graph
     void Kruskal();
     void FordFulkerson(int src, int dest);
     void Kosaraju();
+    void FloydWarshall();
 };

@@ -516,6 +516,55 @@ void Graph::Kosaraju()
     KosarajuUtil(gstack);
 }
 
+// Function to print out the matrix
+void Graph::printMat(std::vector<std::vector<int>>& mat)
+{
+    std::cout<<"\nFloyd Warshall algorithm shortest path\n";
+    for(int i = 0; i < numVert; ++i)
+    {
+        for(int j = 0; j < numVert; ++j)
+        {
+            if(mat[i][j] == INT_MAX)
+                continue;
+            std::cout<<"Shortest disatnce from "<<i<<" to "<<j<<" is: "<<mat[i][j]<<std::endl;
+        }
+    }
+}
+
+// Function to perform the Floyd Warshall algorithm to find the shortest path between each 2 vertices in the graph
+void Graph::FloydWarshallUtil(std::vector<std::vector<int>>& mat)
+{
+    // Loop through all the edge in the matrix and find the path between 2 vertices by sub-paths
+    for(int k = 0; k < numVert; ++k)
+    {
+        for(int i = 0; i < numVert; ++i)
+        {
+            for(int j = 0; j < numVert; ++j)
+            {
+                if(i == j)
+                    continue;
+                if(mat[i][k] + mat[k][j] < mat[i][j] && mat[i][k] != INT_MAX && mat[k][j] != INT_MAX)
+                    mat[i][j] = mat[i][k] + mat[k][j];
+            }
+        }
+    }
+}
+
+// General function to perform Floyd Warshall function to find the shortest path
+void Graph::FloydWarshall()
+{
+    // Initiate the graph matrix
+    std::vector<std::vector<int>> mat(numVert, std::vector<int>(numVert, INT_MAX));
+    // Convert list to matrix
+    ListtoMat(mat);
+
+    FloydWarshallUtil(mat);
+
+    // Display to the terminal
+    printMat(mat);
+    return;
+}
+
 int main()
 {
     // Intiiate the graph
@@ -557,6 +606,7 @@ int main()
     // Shortest path algorithms
     g.BellmanFord(2);
     g.Dijkstra(2);
+    g.FloydWarshall();
 
     // MST algorithms
     g.Prim();
