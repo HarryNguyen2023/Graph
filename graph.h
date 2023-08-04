@@ -4,6 +4,9 @@
 
 // Initiate the class of graph
 #define edge std::pair<int, int>
+
+#ifndef _GRAPH_
+#define _GRAPH_
 class Graph
 {
     int numVert;
@@ -43,3 +46,5 @@ class Graph
     void Kosaraju();
     void FloydWarshall();
 };
+
+#endif
