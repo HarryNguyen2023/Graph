@@ -7,6 +7,7 @@
 
 #ifndef _GRAPH_
 #define _GRAPH_
+
 class Graph
 {
     int numVert;

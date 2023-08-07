@@ -120,29 +120,3 @@ void minHeap<T>::heapsort()
         Heapify(i, 0);
     }
 }
-
-int main()
-{
-    // Initiate the heap 
-    minHeap<int> mheap;
-    int random[] = {23, 76, 3, 4, 8, 5, 90, 101, 32, 22, 27, 35, 109};
-    for(int i = 0; i < sizeof(random)/sizeof(int); ++i)
-        mheap.insert(random[i]);
-    // Display the the heap
-    mheap.printHeap();
-    // Delete a few node in the heap
-    mheap.remove(35);
-    mheap.remove(22);
-    mheap.remove(510);
-    // Display the heap once again
-    mheap.printHeap();
-    // Get the minimum element in the heap
-    std::cout<<"The minimum element in the heap is: "<<mheap.getMin()<<std::endl;
-    // Get the size of the heap
-    std::cout<<"Size of the heap is: "<<mheap.getSize()<<std::endl;
-    // Sort the heap array
-    mheap.heapsort();
-    mheap.printHeap();
-
-    return 0;
-}
