@@ -1,12 +1,12 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <list>
 #include <stack>
 #include <vector>
 
 // Initiate the class of graph
 #define edge std::pair<int, int>
-
-#ifndef _GRAPH_
-#define _GRAPH_
 
 class Graph
 {
